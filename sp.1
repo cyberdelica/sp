@@ -1,0 +1,81 @@
+.TH SP 1
+.SH NAME
+sp \- fetch the latest spot prices for precious metals
+.SH SYNOPSIS
+.B sp
+[\fB\-hj\fR]
+[\fB\-a\fR \fIagent\fR]
+[\fB\-c\fR \fIcurrency\fR]
+[\fB\-m\fR \fImetal\fR]
+[\fB\-u\fR \fIunit\fR]
+.SH DESCRIPTION
+.PP
+.B sp
+fetches the latest precious metal spot prices.
+The API it uses only updates every 2 minutes, so it is not advised to request the data more often than that.
+.B sp
+uses \fBcurl\fR(1), \fBjq\fR(1), and \fBsed\fR(1) within its internal functions, and as such, it is a requirement for them to be available to run.
+.B sp
+will automatically check for the appropriate dependencies on execution.
+.PP
+.B sp
+is intended to be part of a small suite of utiities dealing with precious metal pricing and display, called \fBpmutils\fR.
+Future applications will be called: \fBlf\fR(1), for fetching the current London Fix; and \fBtickr\fR(1), for displaying the data in a rolling stock ticker like fashion.
+.SH OPTIONS
+.TP
+.BR \-a " " \fIagent\fR
+Alternative user agent to use when making requests.
+.TP
+.BR \-c " " \fIcurrency\fR
+Currency to display the spot price in.
+Options are: \fIGBP\fR, \fIUSD\fR, and \fIEUR\fR.
+The default currency used to display prices is: \fIGBP\fR.
+.TP
+.B \-h
+Displays help text.
+.TP
+.B \-j
+Dumps the raw JSON response to standard output.
+Useful if using another application/language to parse the output.
+.TP
+.BR \-m " " \fImetal\fR
+The metal to display the price for.
+Options are: \fIgold\fR, \fIau\fR, \fIsilver\fR, \fIag\fR, \fIplatinum\fR, \fIpt\fR, \fIpalladium\fR, and \fIpd\fR.
+If no option is given, the prices for all metals will be displayed by default \- otherwise, just the price will be displayed without any superfluous information.
+.TP
+.BR \-u " " \fIunit\fR
+The unit of weight to display the price for.
+Options are: \fItroy\fR, \fItoz\fR, \fIt\fR, \fIgram\fR, and \fIg\fR.
+The default unit of weight to display prices for is: \fItroy\fR.
+.SH EXAMPLES
+.BR sp (1)
+can be used to fetch precious metals prices on a periodic basis with a bit of simple shell scripting.
+As the API \fBsp\fR(1) uses only updates every 2 minutes, it is not worthwhile requesting data more often than that.
+To use \fBsp\fR(1) to fetch prices every 2 minutes, use:
+.PP
+.nf
+.RS
+while :
+do
+	sp
+	sleep 120
+done
+.RE
+.fi
+.PP
+The results can be redirected to a log file, or piped to a program like \fBawk\fR(1) for further processing.
+.SH NOTES
+.B sp
+uses an undocumented API, therefore it is to be considered unstable and liable to fail at any moment.
+Do not use in any situation where the reliability of the program is a requirement.
+.SH BUGS
+Currently scrapes a web page for an ajax token on every invocation.
+As such, it uses more bandwidth than necessary.
+In future, the token will be stored in a file, and by various means \fBsp\fR(1) will ascertain whether to scrape another token, or to continue to use the one stored.
+.SH AUTHOR
+.B cyberdelica
+(http://www.cyberdelica.org/)
+.SH "SEE ALSO"
+.BR curl (1)
+.BR jq (1)
+.BR sed (1)
