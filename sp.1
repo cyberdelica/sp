@@ -12,15 +12,12 @@ sp \- fetch the latest spot prices for precious metals
 .PP
 .B sp
 fetches the latest precious metal spot prices.
-The API it uses only updates every 2 minutes, so it is not advised to request the data more often than that.
+The API it uses only updates every 2 minutes, so it is inadvisable to request the data any faster.
 .B sp
-uses \fBcurl\fR(1), \fBjq\fR(1), and \fBsed\fR(1) within its internal functions, and as such, it is a requirement for them to be available to run.
+uses \fBcurl\fR(1), \fBjq\fR(1), and \fBsed\fR(1) within its internal functions, and as such, they are a requirement for \fBsp\fR to run.
 .B sp
-will automatically check for the appropriate dependencies on execution.
+will automatically check for the appropriate dependencies upon execution.
 .PP
-.B sp
-is intended to be part of a small suite of utiities dealing with precious metal pricing and display, called \fBpmutils\fR.
-Future applications will be called: \fBlf\fR(1), for fetching the current London Fix; and \fBtickr\fR(1), for displaying the data in a rolling stock ticker like fashion.
 .SH OPTIONS
 .TP
 .BR \-a " " \fIagent\fR
@@ -50,8 +47,8 @@ The default unit of weight to display prices for is: \fItroy\fR.
 .SH EXAMPLES
 .BR sp (1)
 can be used to fetch precious metals prices on a periodic basis with a bit of simple shell scripting.
-As the API \fBsp\fR(1) uses only updates every 2 minutes, it is not worthwhile requesting data more often than that.
-To use \fBsp\fR(1) to fetch prices every 2 minutes, use:
+As the API \fBsp\fR(1) uses only updates every 2 minutes, it is not worthwhile requesting data any faster.
+To fetch prices every 2 minutes, use:
 .PP
 .nf
 .RS
@@ -66,7 +63,7 @@ done
 The results can be redirected to a log file, or piped to a program like \fBawk\fR(1) for further processing.
 .SH NOTES
 .B sp
-uses an undocumented API, therefore it is to be considered unstable and liable to fail at any moment.
+uses an undocumented API, therefore it should be considered unstable, and liable to fail at any moment.
 Do not use in any situation where the reliability of the program is a requirement.
 .SH BUGS
 Currently scrapes a web page for an ajax token on every invocation.
