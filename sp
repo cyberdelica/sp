@@ -1,16 +1,40 @@
 #!/usr/bin/env sh
 # sp - fetch precious metal spot prices from bullionbypost
+#
+# This is free and unencumbered software released into the public domain.
+# 
+# Anyone is free to copy, modify, publish, use, compile, sell, or
+# distribute this software, either in source code form or as a compiled
+# binary, for any purpose, commercial or non-commercial, and by any
+# means.
+# 
+# In jurisdictions that recognize copyright laws, the author or authors
+# of this software dedicate any and all copyright interest in the
+# software to the public domain. We make this dedication for the benefit
+# of the public at large and to the detriment of our heirs and
+# successors. We intend this dedication to be an overt act of
+# relinquishment in perpetuity of all present and future rights to this
+# software under copyright law.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
 
 # globals
 self="$(basename "${0}")"
-version="0.1a"
+version="0.1b"
 author="cyberdelica"
 website="http://www.cyberdelica.org/"
 
 url="https://www.bullionbypost.co.uk/"
-path="ajax/update-prices/ssl/"
+path="ajax/update-header-metal-prices/"
 
-agent="sp"
+agent="sp/${version}"
 
 # boilerplate functionality
 die() {
@@ -27,10 +51,10 @@ usage() {
 }
 
 help() {
-	printf "%s v%s -- (c) Copyright 2017 %s (%s)\n\n" "${self}" "${version}" "${author}" "${website}"
+	printf "%s v%s -- %s (%s)\n\n" "${self}" "${version}" "${author}" "${website}"
 	usage 1
 	printf "\nOptions:\n"
-	printf "    %s\t%s\n" "-a agent" "alternative user agent. default is: \"${agent}/${version}\"."
+	printf "    %s\t%s\n" "-a agent" "alternative user agent. currently: \"${agent}\"."
 	printf "    %s\t%s\n" "-c currency" "currency to display spot price in. options are: GBP, USD, and EUR."
 	printf "    %s\t\t%s\n" "-h" "displays the help."
 	printf "    %s\t\t%s\n" "-j" "dump the raw json response to stdout."
@@ -86,15 +110,15 @@ sanitise() {
 	fi
 }
 
-# scrape ajax token - used to make multiple requests
+# scrape "price update token"  - used to make multiple requests
 token() {
-	token="$(curl --capath /etc/ssl/certs/ -sSA "${agent}" "${url}" 2>/dev/null | sed -n '/ajaxToken/{s![^"]*"\([^"]*\)".*!\1!p}')"
-	[ -z "${token}" ] && error "couldn't scrape ajax token from ${url}"
+	token="$(curl --capath /etc/ssl/certs/ -sSA "${agent}" "${url}" 2>/dev/null | sed -n '/price_update_token/{s![^"]*"\([^"]*\)".*!\1!p}')"
+	[ -z "${token}" ] && error "couldn't scrape \"price update token\" from ${url}"
 }
 
 # fetch json data
 fetch() {
-	data="$(curl --capath /etc/ssl/certs/ -sSA "${agent}" "${url}${path}${token}" 2>/dev/null | sed 's!\&[^;]*;!!g; s!<[^>]*>[^0-9]*!!g')"
+	data="$(curl --capath /etc/ssl/certs/ -sSA "${agent}" "${url}${path}${token}/" 2>/dev/null | sed 's!\&[^;]*;!!g; s!<[^>]*>[^0-9]*!!g')"
 }
 
 # start of the main routine
@@ -120,16 +144,13 @@ shift "$(expr "${OPTIND}" - 1)"
 sanitise
 token
 
+fetch
+[ -z "${data}" ] && error "couldn't scrape data"
+
 if [ "${json:-0}" -ne 0 ]
 then
-	fetch
-	[ -z "${data}" ] && error "couldn't scrape data"
-
 	printf "%s\n" "${data}"
 else
-	fetch
-	[ -z "${data}" ] && error "couldn't scrape data"
-
 	# separate timestamp for convenient formatting
 	ts="$(printf "%s" "${data}" | jq -r '.[].last_updated')"
 
