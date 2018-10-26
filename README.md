@@ -6,7 +6,7 @@ Fetch the latest spot prices for precious metals, from the command line.
 
 *sp* fetches the latest precious metal spot prices by way of an undocumented API
 provided by a popular retail website. The API only updates every 2 minutes, so
-when using *sp* to automate requests, it is advised not to request any faster
+when using *sp* to automate requests, it is inadvisable to request any faster
 than this limit. Unfortunately, the details preceding means that *sp* is
 inherently unstable, and liable to break at any moment in time. Use caution as
 appropriate.
@@ -23,8 +23,8 @@ comprehensive man page, as all good tools should.
 
 ## Purpose
 
-To provide a way of fetching precious metal spot prices on the command line, so
-that the data can be stored/used for further processing.
+To provide a way of fetching precious metal spot prices from the command line, so
+the data may be stored/used for further processing.
 
 ## Example Output
 
@@ -44,3 +44,7 @@ Without any arguments, *sp* should output something similar to:
 ## To Do
 
 - [ ] Store ajax token to file for saving bandwidth when making repeat requests.
+
+## Copyright
+
+*sp* is released into the public domain.
